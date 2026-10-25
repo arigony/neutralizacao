@@ -1,6 +1,6 @@
 {
   "name": "neutraliza-lab-ar",
-  "version": "2.2.0",
+  "version": "2.2.1",
   "private": true,
   "type": "module",
   "description": "Jogo de neutralização com RA baseada em rastreamento da mão e modelos 3D esquemáticos corretos",

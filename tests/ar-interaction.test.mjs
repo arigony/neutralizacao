@@ -23,7 +23,7 @@ test('quatro modelos aparecem no modo demonstração e em rastreamento; espelham
   global.document={hidden:false,querySelector:()=>({getBoundingClientRect:()=>({height:250})})};
   global.ResizeObserver=class{observe(){}disconnect(){}};
   global.requestAnimationFrame=()=>1;global.cancelAnimationFrame=()=>{};
-  const ctx={setTransform(){},clearRect(){}};
+  const ctx={setTransform(){},clearRect(){},save(){},restore(){},beginPath(){},moveTo(){},lineTo(){},stroke(){}};
   const canvas={getContext:()=>ctx,addEventListener(){},removeEventListener(){}};const stage={clientWidth:390,clientHeight:844};
   const renderer=new ARRenderer(canvas,stage);const drawn=[];
   renderer.renderMolecule=(i,x,y,unit)=>{drawn.push({i,x,y,unit});};
@@ -54,7 +54,7 @@ test('coeficiente gera N estruturas completas, mantendo cada espécie separada',
   global.document={hidden:false,querySelector:()=>({getBoundingClientRect:()=>({top:680,bottom:115,height:155})})};
   global.ResizeObserver=class{observe(){}disconnect(){}};
   global.requestAnimationFrame=()=>1;global.cancelAnimationFrame=()=>{};
-  const ctx={setTransform(){},clearRect(){}};
+  const ctx={setTransform(){},clearRect(){},save(){},restore(){},beginPath(){},moveTo(){},lineTo(){},stroke(){}};
   const canvas={getContext:()=>ctx,addEventListener(){},removeEventListener(){}};
   const stage={clientWidth:390,clientHeight:844};
   const renderer=new ARRenderer(canvas,stage);const drawn=[];
@@ -73,4 +73,14 @@ test('coeficiente gera N estruturas completas, mantendo cada espécie separada',
   renderer.mode='tracking';drawn.length=0;renderer.render(240);
   assert.deepEqual([0,1,2,3].map(i=>drawn.filter(d=>d.i===i).length),[3,2,2,1]);
   renderer.stop();
+});
+
+
+test('seta entre reagentes e produtos é projetada com traço visível',()=>{
+  const commands=[];
+  const ctx={save(){commands.push('save')},restore(){commands.push('restore')},beginPath(){commands.push('begin')},moveTo(x,y){commands.push(['M',x,y])},lineTo(x,y){commands.push(['L',x,y])},stroke(){commands.push('stroke')}};
+  ARRenderer.prototype.renderReactionArrow.call({ctx,dimensions:{width:390}},195,410,10);
+  assert.equal(commands.filter(c=>c==='stroke').length,2,'contorno e traço branco');
+  assert.ok(commands.some(c=>Array.isArray(c)&&c[0]==='M'&&c[1]<195));
+  assert.ok(commands.some(c=>Array.isArray(c)&&c[0]==='L'&&c[1]>195));
 });

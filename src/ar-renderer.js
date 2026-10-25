@@ -139,6 +139,30 @@ export class ARRenderer{
     const labelY=cy+maxY+unit*(index===2?2.55:2.35)+14;
     this.pill(cx,labelY,`${n} × ${FORMULA_LABELS[index]}`,null);
   }
+  /** Seta entre reagentes (H₂SO₄ + NaOH) e produtos (Na₂SO₄ + H₂O).
+   *  É desenhada no Canvas, no mesmo referencial dos modelos: acompanha a mão.
+   *  Uma discreta sombra mantém o símbolo legível sobre imagens da câmera.
+   */
+  renderReactionArrow(cx,cy,unit){
+    const ctx=this.ctx;
+    const w=this.dimensions.width;
+    const length=clamp(w*.082,25,39);
+    const offsetY=clamp(unit*.4,3,7);
+    const left=cx-length*.39,right=cx+length*.37,y=cy-offsetY;
+    ctx.save();
+    ctx.lineCap='round';ctx.lineJoin='round';
+    // Contorno escuro: contraste em cenas claras e fundos com movimento.
+    ctx.beginPath();
+    ctx.moveTo(left,y);ctx.lineTo(right,y);
+    ctx.moveTo(right-length*.28,y-length*.23);
+    ctx.lineTo(right,y);ctx.lineTo(right-length*.28,y+length*.23);
+    ctx.strokeStyle='rgba(2,20,24,.94)';ctx.lineWidth=6.5;
+    ctx.stroke();
+    ctx.shadowColor='rgba(51,239,211,.60)';ctx.shadowBlur=7;
+    ctx.strokeStyle='#eafffb';ctx.lineWidth=2.8;
+    ctx.stroke();
+    ctx.restore();
+  }
   render(now){
     const ctx=this.ctx,w=this.dimensions.width,h=this.dimensions.height;
     ctx.clearRect(0,0,w,h);this.hitTargets=[];
@@ -173,6 +197,9 @@ export class ARRenderer{
       const x=clamp(centerX+relative*rowWidth,38,w-38);
       this.renderGroup(i,x,centerY,unit*SPECIES[KEYS[i]].scale,spin,now);
     });
+    // Reação completa: os dois primeiros grupos são reagentes e os dois
+    // últimos são produtos. A seta deve permanecer presente em todos os modos.
+    this.renderReactionArrow(centerX,centerY,unit);
   }
   anim(now){if(!document.hidden)this.render(now);this.loop=requestAnimationFrame(this.anim);}
   stop(){cancelAnimationFrame(this.loop);this.canvas.removeEventListener('click',this.handleTap);this.resizeObserver.disconnect();}

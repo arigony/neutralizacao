@@ -1,8 +1,13 @@
-# Neutraliza LAB AR 2.2 — visual clássico da professora Carol
+# Neutraliza LAB AR 2.2.1 — visual clássico da professora Carol + seta
 
 **Projeto colaborativo**: baseado na proposta didática da **Prof. Carolina Souza**, com aperfeiçoamentos científicos e técnicos para dispositivos móveis.
 
 Jogo de balanceamento de neutralização com estruturas químicas desenhadas sobre a imagem da mão, reconhecimento pelo MediaPipe e demonstração sem câmera. Projeto estático (HTML, CSS e JavaScript), publicável diretamente no **GitHub Pages**, sem build.
+
+## Ajuste da versão 2.2.1
+
+- **Seta → inserida entre reagentes e produtos**, ao lado das estruturas sobre a mão ou na demonstração. O símbolo é redesenhado em tempo real junto com a cena e permanece visível enquanto os coeficientes mudam.
+- Mantidos painel compacto e reprodução visual de cada estrutura ao pressionar `+` e `−`.
 
 ## O que mudou em relação à versão 2.1
 

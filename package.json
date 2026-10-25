@@ -1,0 +1,11 @@
+{
+  "name": "neutraliza-lab-ar",
+  "version": "2.2.0",
+  "private": true,
+  "type": "module",
+  "description": "Jogo de neutralização com RA baseada em rastreamento da mão e modelos 3D esquemáticos corretos",
+  "scripts": {
+    "start": "python3 -m http.server 8000",
+    "test": "node --test tests/*.test.mjs"
+  }
+}

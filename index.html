@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,viewport-fit=cover" />
+  <meta name="theme-color" content="#08111c" />
+  <meta name="description" content="Neutraliza LAB AR: estruturas químicas na palma da mão e jogo de balanceamento de neutralização." />
+  <title>Neutraliza LAB AR · Química na palma da mão</title>
+  <link rel="icon" type="image/svg+xml" href="./assets/favicon.svg" />
+  <link rel="stylesheet" href="./assets/style.css" />
+</head>
+<body>
+  <div id="app" class="app">
+    <main class="scene" id="scene">
+      <video id="camera" class="camera" autoplay muted playsinline hidden aria-label="Imagem da câmera em tempo real"></video>
+      <div class="demo-background" aria-hidden="true"><div class="ambient-ring ambient-ring-1"></div><div class="ambient-ring ambient-ring-2"></div><div class="demo-grid"></div></div>
+      <canvas id="ar-layer" class="ar-layer" aria-label="Modelos tridimensionais dos quatro participantes da reação"></canvas>
+      <div class="scene-vignette" aria-hidden="true"></div>
+
+      <header class="topbar">
+        <div class="brand"><span class="brand-mark" aria-hidden="true">✳</span><div><strong>NEUTRALIZA<span>LAB</span></strong><small>QUÍMICA NA PALMA DA MÃO</small></div></div>
+        <span class="top-status" id="status-pill"><span class="status-dot"></span><span id="status-text">MODO EXPLORAR</span></span>
+      </header>
+      <div class="instruction">
+        <div class="lesson-chip">REAÇÃO · ÁCIDO + BASE</div>
+        <h1>Neutralização: <em>H₂SO₄ + NaOH → Na₂SO₄ + H₂O</em></h1>
+        <p id="instruction-text">Mostre a mão à câmera. Toque em + para ver mais estruturas.</p>
+      </div>
+      <div class="overlay-tools">
+        <button type="button" class="tool-button" id="camera-toggle" aria-label="Ativar câmera">◉ <span id="camera-action">Ativar câmera</span></button>
+        <button type="button" class="tool-button tool-secondary" id="camera-flip" hidden aria-label="Alternar câmera">⇄ <span>Trocar</span></button>
+        <button type="button" class="tool-button tool-secondary" id="demo-button" aria-label="Ativar demonstração sem câmera">◇ <span>Demonstração</span></button>
+      </div>
+      <div id="center-prompt" class="center-prompt">
+        <div class="prompt-icon" aria-hidden="true"><svg width="66" height="66" viewBox="0 0 64 64" fill="none"><path d="M19 44V30c0-2.9 4-3.8 5.6-1.9V12a3.2 3.2 0 016.4 0v17-21a3.2 3.2 0 016.4 0v21-16a3.2 3.2 0 016.4 0v17-10a3.2 3.2 0 016.4 0v14c0 11-7 18-18 18-7 0-11-2-14-8l-6-10c-2-3.5 2-7 5-4l6 6" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        <strong id="prompt-title">Mostre a mão. Descubra a reação.</strong>
+        <p id="prompt-desc">Quatro modelos 3D esquemáticos, uma reação para equilibrar.</p>
+        <button class="start-button" type="button" id="start-button">Ativar realidade aumentada <span aria-hidden="true">↗</span></button>
+        <button class="secondary-link" type="button" id="start-demo">Explorar sem câmera</button>
+      </div>
+      <div class="hand-help" id="hand-help" hidden><span class="hand-help-icon">✋</span><span id="hand-help-text">Mostre a palma da mão aberta diante da câmera</span></div>
+      <div class="selection-pill" id="selection-pill" aria-live="polite" hidden></div>
+
+      <section class="control-deck" aria-label="Jogo de balanceamento">
+        <div class="deck-head">
+          <div><span class="deck-overline">DESAFIO</span><h2>Ajuste os coeficientes</h2></div>
+          <button id="info-button" type="button" class="info-button" title="Notas científicas e instruções" aria-label="Instruções e notas científicas">i</button>
+        </div>
+        <div class="reaction" id="reaction" aria-live="polite"><span><b id="eq0">1</b>H₂SO₄</span><i>+</i><span><b id="eq1">1</b>NaOH</span><strong>→</strong><span><b id="eq2">1</b>Na₂SO₄</span><i>+</i><span><b id="eq3">1</b>H₂O</span></div>
+        <div class="steppers" id="steppers">
+          <div class="chem-control" data-index="0"><div class="control-caption"><span class="mini-atom a-acid"></span><span>H₂SO₄</span></div><div class="stepper"><button type="button" data-i="0" data-d="-1" aria-label="Diminuir H2SO4">−</button><output id="c0">1</output><button type="button" data-i="0" data-d="1" aria-label="Aumentar H2SO4">+</button></div></div>
+          <div class="chem-control" data-index="1"><div class="control-caption"><span class="mini-atom a-base"></span><span>NaOH</span></div><div class="stepper"><button type="button" data-i="1" data-d="-1" aria-label="Diminuir NaOH">−</button><output id="c1">1</output><button type="button" data-i="1" data-d="1" aria-label="Aumentar NaOH">+</button></div></div>
+          <div class="chem-control" data-index="2"><div class="control-caption"><span class="mini-atom a-salt"></span><span>Na₂SO₄</span></div><div class="stepper"><button type="button" data-i="2" data-d="-1" aria-label="Diminuir Na2SO4">−</button><output id="c2">1</output><button type="button" data-i="2" data-d="1" aria-label="Aumentar Na2SO4">+</button></div></div>
+          <div class="chem-control" data-index="3"><div class="control-caption"><span class="mini-atom a-water"></span><span>H₂O</span></div><div class="stepper"><button type="button" data-i="3" data-d="-1" aria-label="Diminuir H2O">−</button><output id="c3">1</output><button type="button" data-i="3" data-d="1" aria-label="Aumentar H2O">+</button></div></div>
+        </div>
+        <div class="deck-actions"><button id="verify" class="verify-button" type="button"><span>✓</span> Verificar balanceamento <span aria-hidden="true">↗</span></button><button id="reset" class="reset-button" type="button" aria-label="Recomeçar jogo" title="Recomeçar">↻</button></div>
+      </section>
+      <div class="copyright">PROF. CAROLINA SOUZA <span>×</span> COLABORAÇÃO CIENTÍFICA · VERSÃO 2.2</div>
+    </main>
+  </div>
+
+  <dialog id="result-dialog" class="result-dialog" aria-labelledby="result-title">
+    <div class="result-head"><span class="result-flag" id="result-flag">RESULTADO DA REAÇÃO</span><button type="button" class="close-button" data-close="result-dialog" aria-label="Fechar resultado">×</button></div>
+    <div class="result-symbol" id="result-symbol" aria-hidden="true">✓</div>
+    <h2 id="result-title">Balanceamento concluído!</h2>
+    <p id="result-description">Você conservou os átomos de todos os elementos.</p>
+    <div class="result-equation" id="result-equation"></div>
+    <table class="atom-table"><caption>Conservação dos átomos</caption><thead><tr><th>Elemento</th><th>Reagentes</th><th>Produtos</th><th>Estado</th></tr></thead><tbody id="atom-results"></tbody></table>
+    <p class="result-note" id="result-note"></p>
+    <div class="dialog-actions"><button class="dialog-primary" type="button" data-close="result-dialog">Voltar ao jogo</button><button class="dialog-secondary" type="button" id="result-restart">Nova tentativa</button></div>
+  </dialog>
+  <dialog id="info-dialog" class="result-dialog info-dialog" aria-labelledby="info-title">
+    <div class="result-head"><span class="result-flag">GUIA RÁPIDO</span><button type="button" class="close-button" data-close="info-dialog" aria-label="Fechar instruções">×</button></div>
+    <h2 id="info-title">Como jogar</h2>
+    <p>1. Ative a câmera, autorize o acesso e mostre uma mão aberta. As quatro representações aparecem junto aos dedos e acompanham o movimento. Você pode tocar em uma estrutura para identificá-la. No modo demonstração, elas aparecem na tela sem câmera.</p>
+    <p>2. Toque em + ou − para alterar os coeficientes entre 1 e 8. Cada aumento adiciona uma cópia visual completa da espécie, como no jogo original da professora Carol. Pressione <strong>Verificar balanceamento</strong> para comparar H, O, S e Na entre os reagentes e os produtos.</p>
+    <h3>Nota científica importante</h3>
+    <p>H₂SO₄ e H₂O são mostrados por modelos de conectividade. A água possui ângulo H–O–H de ~104,5°. O grupo SO₄ tem arranjo tetraédrico ideal (~109,47°). Para NaOH e Na₂SO₄ usamos íons separados: Na⁺ + OH⁻ e 2 Na⁺ + SO₄²⁻. <strong>Não há ligação covalente Na–O.</strong></p>
+    <p class="science-warning">Esses modelos são esquemáticos: não simulam a solvatação, estrutura cristalina, dinâmica real de reação nem a especiação do sulfato em função do pH. A equação global é uma representação didática.</p>
+    <p>Permissão para câmera só é solicitada ao tocar no botão. O rastreamento é processado no aparelho; as bibliotecas são carregadas por CDN. Requer HTTPS e conexão para o carregamento inicial.</p>
+    <button class="dialog-primary" type="button" data-close="info-dialog">Entendi</button>
+  </dialog>
+  <script type="module" src="./src/app.js"></script>
+</body>
+</html>
